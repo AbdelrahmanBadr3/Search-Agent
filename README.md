@@ -1,4 +1,99 @@
-# This is the starter code for Project 1
+# Search Agent 
+- ## Search Tree:
+    - Search Tree nodes are considered as 5-tuple. This tuple consists of:
+        - 1- The parent node
+        - 2- The state of the state space where this node corresponds to, The root of the search tree is the initial state of the problem
+        - 3- The operator that is applied to generate this node
+        - 4- The depth of the node in the tree
+        - 5- The path cost from the root till this node
+- ## Search Problem:
+    - It is the general search problem that takes as an input the problem itself and the queuing function.
+    - It returns whether failure or success. It has a base case which is if the tree has no nodes, then it will return failure. It returns Success if it reaches the goal node, i.e., passes the goal test. If it passes, it will return the node that is the goal.
+- ## Mission Impossible:
+    - Generation grid: We identified:
+        - 1- The maximum and minimum sizes for the grid which are 15 and 5,respectively.
+        - 2- The maximum and the minimum number of the IMF members which is 10 and 5, respectively.
+        - 3- The maximum and minimum capacity which is 10 and 1, respectively.
+        - 4- The maximum health which is 99.
+        - 5- The minimum health which is 1.
+        - 6- The number of rows and columns which is generated randomly and do not exceed the size limits of the grid.
+        - 7- The number of the IMF members which is generated randomly and does not exceed the limits of the maximum and minimum IMF number.
+        - 8- The capacity which is also generated randomly and does not exceed the limits of the capacity.
+        - 9- Maximum index which is a position on the grid, it is equal to the maximum number of columns * maximum number of rows -1.
+        - 10- Minimum index which is initially equal to zero.
+        - 11- Ethan position which is randomly generated and within the maximum and minimum indices.
+        - 12- Submarine position which is randomly generated and within also the maximum and the minimum indices.
+    - Solve:
+        - Takes as parameters the grid, the search strategy (one of the 8 mentioned strategies) and generates a problem which is instance of mission impossible.
+        - It outputs a node, if the node exists, it outputs the whole state, also the IMF members who died and we display the whole sequence of actions by calling another method which is getSequence.
+- ## Main Functions:
+    - A. Class Search Problem:
+        - a. general_search() function:
+            - This function is responsible of implementing the different search strategies which takes as parameters the search problem itself an instance of search problem class and it takes a string representing the type of the queuing function which includes the different types of the search strategies and switching upon these different strategies to perform the search on the problem with the corresponding strategy.
+        - b. getSequence() function:
+            - This function is responsible of returning the sequence of the nodes expanded, and it takes as parameters the node itself which is an instance of the search tree class.
+        - c. In this class there is four abstract functions which are clearStateTable(), transitionFunction(), goalTest() and getInitState(). Each of these functions are implemented in the Mission Impossible class.   
+    - B. Class Mission Impossible:
+        - a. indexConverter() function:
+            - This function is responsible of converting the indices of the positions into one index instead of 2 indices representing the position by taking the integer division and the remainder over the number of columns of the grid. It takes as parameters the positions string and the number of columns of the grid generated.
+        - b. updateIMF() function:
+            - This function is updating the list of the IMF members positions by adding an index position in the list after each member position in order to be able to keep track of each member on its own with a specific index that does not change. It takes as parameters the string including the IMF members positions.
+        - c. removeIMF() function:
+            - This function is to remove the IMF member from the list by knowing its specific index and return the updating positions after removing the IMF member. Moreover, if all the members are to be removed the returned string will include only “-1” which means that there are no IMF members anymore. It takes as parameters the IMF members positions list and the index of the specific IMF member to be removed.
+        - d. updateHealths() function:
+            - This function is responsible to update the health of the remaining soldiers. If the action taken is “carry” then the heath of the remaining soldiers will be increased by 2, but the soldier carried the health will remain the same. If the action is “drop” then it will return the string including the remaining IMF members and their corresponding health and the capacity. If it is any other action all the IMF members health will be increased by 2 and if the health reached 100 then the IMF member is dead. It takes as parameters the health stringin cluding all health of all IMF member, the operator string informing the action, the IMF members positions list, Ethan position and the remaining capacity.
+        - e. transitionFunction() function:
+            - This function is responsible of output all the possible actions it could be done from the current node according to the different operators. It takes as parameters the current node which include its state that includes Ethan position, IMF members positions, their health and the remaining capacity. Then, according to each operator there is another state to have. In all these actions it returns the next state with these differences for the next node. Moreover, it keep track of the repeated states in hashtable data structure in order no to reach an infinite loop through expansion.
+                - • “up” operator: Ethan’s position changes in the x co-ordinate by subtracting.
+                - • “down” operator: Ethan’s position changes in the x co-ordinate by addition.
+                - • “left”: Ethan’s position changes in the y co-ordinate by addition.
+                - • “right”: Ethan’s position changes in the y co-ordinate by subtracting.
+                - • “carry”: The remaining capacity changes as it will decrease.
+                - • “drop”: The capacity will be maximum again as all the members have been dropped, then the truck is empty.
+        - f. goalTest()function:
+            - This function indicates our goal state which here in our case if when the IMF members list is empty, and the capacity is maximum which means that the truck is empty also. It takes as parameters the state itself.
+        - g. pathCost() function:
+            - This function computes the path cost at each node since, it aims at optimizing the number of deaths of the IMF members. It is calculated as follows:
+                - Total_alive_health + death_factor * (sum_of_differences * no_of_deaths)
+                - This equation gives a high penalty when there is IMF member which is dead through the death factor. It takes the total number of alive numbers to be added with the death factor multiplied by the number of deaths and the sum of difference between the old health and the new health of each member.
+        - h. getInitState() function:
+            - This function returns the initial state information.
+        - i. clearStateTable() function:
+            - This function clears the hashtable that saves the states which keeps track of the repeated states.
+        - j. setExpandedNodes() function:
+            - This function sets the number of expanded nodes in any search strategy.
+        - k. getDeads() function:
+            - This function returns the number of dead IMF members that reached health = 100.
+    - C. Class SortbyPathCost:
+        -This is a class that implements comparator which includes only one function which is compare function and this function takes as parameters 2 search trees which are 2 nodes and sort them according to their path cost calculated.
+    - D. Class SortbyHeuristicCost:
+        -This is a class that implements comparator which includes only one function which is compare function and this function takes as parameters 2 search trees which are 2 nodes and sort them according to their heuristic cost calculated of the first heuristic function.
+    - E. Class SortbyHeuristicCost2:
+        -This is a class that implements comparator which includes only one function which is compare function and this function takes as parameters 2 search trees which are 2 nodes and sort them according to their heuristic cost calculated of the second heuristic function added to the path cost together (heuristic cost + path cost).
+- ## Search Strategies:
+    - We have six search strategies in our project which are: Breadth-First Search (BF), Depth-First Search (DF), Iterative-Deepening Search (ID), Uniform-Cost Search (UC), Greedy Search (GR) and A* Search (AS). Moreover, the implementation of each strategy is discussed below.
+        - 1. Breadth-First Search (BF):
+            - BF is the type of search that traverses a tree level by level. To implement that, each node is added to the end of the (Array List nodes). Therefore, when removing nodes from the Array List (removing from the front), we first start by the nodes in the same level, going to the next level and so on.
+        - 2. Depth-First Search (DF):
+            - DF is the type of search that traverses a tree branch by branch. To implement that, each node is added to the front of the (Array List nodes). Therefore, when removing from the Array List, we first start by all the nodes in same branch, going to the next branch and so on.
+        - 3. Iterative-Deepening Search (ID):
+            - ID is the type of search that is a mix between BF and DF as it depends on a cutoff. To implement that, nodes are added in the same manner as DF, in the front of the (Array List nodes), as long as their depth is less than or equal to the cutoff. Therefore, when removing from the Array List, we first remove the nodes in the same branch until we reach the node whose depth is equal to the cutoff, then we go to the next branch and so on.
+        - 4. Uniform-Cost Search (UC):
+            - UC is the type of search that sorts the nodes depending on their path cost. To implement that, nodes are added normally to the (Array List nodes). Then, the Array List is sorted such that the nodes with the least path cost are at the front. Therefore, when removing from the Array List, we first remove the node with the least path cost going on to the next node with the least path cost and so on.
+        - 5. Greedy Search (GR):
+            - GR is the type of search that sorts the nodes depending on their heuristic cost, heuristic cost is calculated using the heuristic function. To implement that, nodes are added normally to the (Array List nodes). Then, the Array List is sorted such that the nodes with the least heuristic cost are at the front. Therefore, when removing from the Array List, we first remove the node with the least heuristic cost going on to the next node with the least heuristic cost and so on.
+        - 6. A* Search (AS):
+            - AS is the type of search that sorts the nodes depending on both their heuristic cost and path cost. To implement that, nodes are added normally to the (Array List nodes). Then, the Array List is sorted such that the nodes with the least (heuristic cost + path cost) are at the front. Therefore, when removing from the Array List, we first remove the node with the least (heuristic cost + path cost) going on to the next node with the least (heuristic cost + path cost) and so on.
 
-### You should NOT alter the structure of any packages
-### You should NOT alter any tests
+- ## Heuristic Functions:
+    - In our approach, we have two heuristic functions, H1 and H2, both of them are admissible. Both Greedy and A* algorithms use these two heuristic functions.
+        - 1. First Heuristic Function (H1):
+            - For the first heuristic function, we make it a relaxed problem by removing the constraint of decreasing IMF members’ health by the Carry and Drop actions. To implement that, based on the node’s state, we get the capacity and the number of remaining IMF members.
+            - Then, we have two nested loops, the outside loop is looping over Ethan's capacity, while the inner loop is looping over the number of the remaining IMF members. Thus, picking IMF members until the capacity of Ethan is full. However, IMF members are not picked randomly, they are picked based on their distance from Ethan, i.e., Manhattan Distance is calculated from Ethan's position to each IMF member’s position, the one with the minimum distance is picked first, adding to the heuristic cost a value of (2 * number of remaining IMF members * minimum distance), which is the value of the decreased health for each IMF member after each taken action without the Carry or the Drop, i.e., Up, Down, Left or Right. Then, Ethan's position is changed to the picked IMF member’s position and the picked IMF member is removed from the list.
+            - After Ethan's position is changed to the picked IMF member’s position, if the capacity is not full yet, Manhattan Distance is recalculated for another IMF member to get the closet IMF member, then adding to the heuristic cost the same equation before and so on until the capacity is full. Last but not least, after picking all the IMF members within the available capacity, we add to the heuristic cost, the cost from Ethan's last position to the submarine, i.e., we add to the heuristic cost a value of (2 * the number of remaining IMF members * Manhattan Distance of (Ethan and submarine)). Thus, getting the value of the decreased health for each IMF member after each taken action, without the Carry or the Drop.
+
+        - In conclusion, our first heuristic function is admissible as the cost is always under-estimated. This is because, first, we remove the cost of the Carry and Drop actions and second, we calculate the Manhattan Distance and get the closest IMF member to Ethan.
+        - 2. Second Heuristic Function (H2):
+            - For the second heuristic, we make it a more relaxed problem by removing another constraint in addition to the Carry and Drop actions, which is the constraint of the capacity. Therefore, in this heuristic function we do not care about the capacity, whether it is full or empty. To implement that, instead of having two nested loops, we only have one loop that loops over the number of remaining IMF members. Then, the same steps as before are repeated, with the only change of not caring about the capacity, i.e., all the remaining IMF members are picked.
+            - Thus, Manhattan Distance is calculated to get the closest IMF member, then we add to the heuristic cost a value of (2 * number of remaining IMF members * minimum distance), which is the value of the decreased health for each IMF member after each taken action without the Carry or the Drop. Then, Ethan's position is changed to the picked IMF member’s position and the picked IMF member is removed from the list. After that, Manhattan Distance is recalculated to get the closest IMF member from Ethan’s new position, and the same equation is added to the heuristic cost. This is done until all the IMF members are picked. Last but not least, we add to the heuristic cost, the cost from Ethan's last position to the submarine, i.e., we add to the heuristic cost a value of (2 * the number of remaining IMF members * Manhattan Distance of (Ethan and submarine)).
+        - In conclusion, the second heuristic function is also admissible as it is always under-estimating the cost. This is because, first, we remove the cost of the Carry and Drop actions, second, we calculate the Manhattan Distance from Ethan to the closest IMF member and third, we pick all the remaining IMF members without caring about Ethan’s capacity.
